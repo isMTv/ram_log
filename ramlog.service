@@ -1,0 +1,19 @@
+[Unit]
+Description=RAMlog
+DefaultDependencies=no
+Before=basic.target rsyslog.service syslog-ng.service syslog.target systemd-journald.service sysinit.target shutdown.target
+After=local-fs.target
+Conflicts=shutdown.target reboot.target halt.target
+RequiresMountsFor=/var/log
+IgnoreOnIsolate=yes
+
+[Service]
+Type=oneshot
+ExecStart=/bin/dash -c '/usr/local/bin/ramlog start'
+ExecStop=/bin/dash -c '/usr/local/bin/ramlog stop'
+ExecReload=/bin/dash -c '/usr/local/bin/ramlog reload'
+RemainAfterExit=yes
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target
