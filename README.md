@@ -1,5 +1,5 @@
 # ram_log
-Moves /var/log to tmpfs. Works with systemd.
+Script for Linux distributions, also suitable for single-board computers. Moves /var/log to tmpfs. Works with systemd.
 
 * When creating a log template, a directories and file structure is created with all rights preserved, but at the same time, will not be copied the file data.
 * The logs template will be created in /var/tmp/log.hdd after reboot or shutdown.
