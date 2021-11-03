@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+INPUT=$1
+
+readonly PROGRAM_NAME="RAMlog"
+readonly LOG_STORE="/var/log"
+readonly TEMPLATE_STORE="/var/tmp/log.hdd"
+readonly JOURNAL_STORE="$LOG_STORE/journal"
+readonly LOG_RAMLOG="ramlog.log"
+
+if [ ! -d "$TEMPLATE_STORE" ]; then mkdir "$TEMPLATE_STORE" ; fi
+
+if [ "$INPUT" = "start" ]; then
+    # copy template to log;
+    cp -af --attributes-only "$TEMPLATE_STORE"/. "$LOG_STORE"/ 2>&1 | tee -a "$LOG_STORE"/"$LOG_RAMLOG"
+elif [ "$INPUT" = "stop" ]; then
+    # copy log to template;
+    rm -rf "${TEMPLATE_STORE:?}"/* 2>&1 | tee -a "$LOG_STORE"/"$LOG_RAMLOG"
+    cp -af --attributes-only "$LOG_STORE"/. "$TEMPLATE_STORE"/ 2>&1 | tee -a "$LOG_STORE"/"$LOG_RAMLOG"
+    rm -rf "${TEMPLATE_STORE:?}"/journal/* 2>&1 | tee -a "$LOG_STORE"/"$LOG_RAMLOG"
+elif [ "$INPUT" = "reload" ]; then
+    # first start, create template;
+    if [ ! -d "$JOURNAL_STORE" ]; then
+        mkdir "$JOURNAL_STORE"
+        chown root:systemd-journal /var/log/journal
+        chmod 0755 /var/log/journal
+    fi
+    rm -rf "${TEMPLATE_STORE:?}"/* 2>&1 | tee -a "$LOG_STORE"/"$LOG_RAMLOG"
+    cp -af --attributes-only "$LOG_STORE"/. "$TEMPLATE_STORE"/ 2>&1 | tee -a "$LOG_STORE"/"$LOG_RAMLOG"
+    rm -rf "${TEMPLATE_STORE:?}"/journal/* 2>&1 | tee -a "$LOG_STORE"/"$LOG_RAMLOG"
+else
+    echo "Usage: RAMlog {start|stop|reload}" >&2
+    exit 1
+fi
