@@ -8,7 +8,7 @@ readonly TEMPLATE_STORE="/var/tmp/log.hdd"
 readonly JOURNAL_STORE="$LOG_STORE/journal"
 readonly LOG_RAMLOG="ramlog.log"
 
-if [ ! -d "$TEMPLATE_STORE" ]; then mkdir "$TEMPLATE_STORE" ; fi
+[ -d "$TEMPLATE_STORE" ] || mkdir "$TEMPLATE_STORE"
 
 if [ "$INPUT" = "start" ]; then
     # copy template to log;
